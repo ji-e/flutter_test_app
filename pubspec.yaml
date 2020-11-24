@@ -27,6 +27,7 @@ dependencies:
   http: any
   dartz: any
   provider: any
+  stack_trace: any
 
 
   # The following adds the Cupertino Icons font to your application.

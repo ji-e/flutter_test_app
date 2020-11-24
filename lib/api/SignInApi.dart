@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dartz/dartz.dart';
+import 'package:fluttertestapp/utils/LogUtils.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 
@@ -11,14 +12,14 @@ class SignInApi {
       Map data = {"methodid": "JW1001", "email": "$email"};
       final reqbody = json.encode(data);
 
-      print("$reqbody");
+      LogUtils(StackTrace.current).d("$reqbody");
 
       final response = await http.post(
           url,
           headers: {"Content-Type": "application/json"},
           body: reqbody);
 
-      print("${response.body.toString()}");
+      LogUtils(StackTrace.current).d("${response.body.toString()}");
 
       return (Right(response.body.toString()));
     } catch (e) {

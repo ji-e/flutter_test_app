@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertestapp/provider/SignInProvider.dart';
+import 'package:fluttertestapp/utils/LogUtils.dart';
 import 'package:provider/provider.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -29,10 +30,6 @@ class _SignInScreen extends State<SignInScreen> {
         ),
         body: SingleChildScrollView(
           child: _signInButton(),
-//        floatingActionButton: FloatingActionButton(
-//        onPressed:()=>signInProvider.jw1001("jieun1@naver.com"),
-//        tooltip: 'Increment',
-//        child: Icon(Icons.add),
       ),
     );
   }
@@ -41,9 +38,9 @@ class _SignInScreen extends State<SignInScreen> {
     return GestureDetector(
       onTap:() async {
 
-        // todo
-        final reqData = signInProvider.jw1001("jieun1@naver.com");
-        print("$reqData"+"FDFDdfdfsdfsf");
+        final reqData =await signInProvider.jw1001("jieun1@naver.com");
+        var email = reqData.email;
+        LogUtils(StackTrace.current).d(email);
       },
       child: Icon(Icons.add),
     );
