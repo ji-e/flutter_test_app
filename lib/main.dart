@@ -1,70 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertestapp/Utils/ColorUtils.dart';
+import 'package:fluttertestapp/provider/SignInProvider.dart';
+import 'package:fluttertestapp/provider/SignUpProvider.dart';
+import 'package:fluttertestapp/views/IntroScreen.dart';
+import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle.dark.copyWith(
+          statusBarColor: Colors.white,
+          statusBarBrightness: Brightness.dark));
+
   runApp(MyApp());
+
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+class MyApp extends StatefulWidget {
+  MyApp();
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyApp createState() => _MyApp();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+class _MyApp extends State<MyApp> {
+  void initState() {
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-
-        title: Text(widget.title),
-      ),
-      body: Center(
-
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
-    );
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => SignInProvider()),
+          ChangeNotifierProvider(create: (context) => SignUpProvider()),
+        ],
+        child: MaterialApp(
+            title: 'Api Calls like a Legend with Provider',
+            theme: ThemeData(primaryColor: ColorUtils.ffffffColor),
+            home: IntroScreen()));
+//    return MultiProvider(
+//        providers: [
+//          ChangeNotifierProvider(create: (context) => SignInProvider()),
+//          ChangeNotifierProvider(create: (context) => SignUpProvider())
+//        ],
+//        child: MaterialApp(
+//          title: 'Flutter Demo',
+//          theme: ThemeData(primaryColor: ColorUtils.ffffffColor),
+//          home: IntroScreen(),
+//        ));
+  }
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
