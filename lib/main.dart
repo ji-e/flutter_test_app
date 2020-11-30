@@ -7,10 +7,16 @@ import 'package:fluttertestapp/views/IntroScreen.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.dark.copyWith(
-          statusBarColor: Colors.white,
-          statusBarBrightness: Brightness.dark));
+//  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+//      statusBarColor: Colors.white,
+////      systemNavigationBarIconBrightness: Brightness.dark,
+//      statusBarIconBrightness: Brightness.dark)
+//  );
+
+//  SystemChrome.setSystemUIOverlayStyle(
+//      SystemUiOverlayStyle.light.copyWith(
+//          statusBarColor: Colors.white,
+//          statusBarBrightness: Brightness.dark));
 
   runApp(MyApp());
 
@@ -37,7 +43,7 @@ class _MyApp extends State<MyApp> {
         ],
         child: MaterialApp(
             title: 'Api Calls like a Legend with Provider',
-            theme: ThemeData(primaryColor: ColorUtils.ffffffColor),
+            theme: ThemeData(primaryColor: ColorUtils.c_004680,accentIconTheme: IconThemeData(color: Colors.black)),
             home: IntroScreen()));
 //    return MultiProvider(
 //        providers: [
