@@ -16,7 +16,7 @@ class _IntroScreen extends State<IntroScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration(seconds: 3), () {
-      signIn();
+      nextEmailInput();
     });
   }
 
@@ -41,7 +41,7 @@ class _IntroScreen extends State<IntroScreen> {
 
   }
 
-  Future signIn() async{
+  Future nextEmailInput() async{
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => SignInScreen()));
   }

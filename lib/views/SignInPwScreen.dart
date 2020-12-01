@@ -6,16 +6,13 @@ import 'package:fluttertestapp/utils/Constants.dart';
 import 'package:fluttertestapp/utils/LogUtils.dart';
 import 'package:provider/provider.dart';
 
-import 'SignInPwScreen.dart';
-import 'SignUpScreen.dart';
-
-class SignInScreen extends StatefulWidget {
+class SignInPwScreen extends StatefulWidget {
   @override
-  _SignInScreen createState() => _SignInScreen();
+  _SignInPwScreen createState() => _SignInPwScreen();
 }
 
-class _SignInScreen extends State<SignInScreen> {
-  final _emailController = TextEditingController();
+class _SignInPwScreen extends State<SignInPwScreen> {
+  final _pwController = TextEditingController();
   final _formEmail = GlobalKey<FormState>();
 
   SignInProvider signInProvider;
@@ -28,7 +25,7 @@ class _SignInScreen extends State<SignInScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _pwController.dispose();
     super.dispose();
   }
 
@@ -48,7 +45,7 @@ class _SignInScreen extends State<SignInScreen> {
               child: Container(
                   padding: const EdgeInsets.all(20),
                   child: Column(children: <Widget>[
-                    _emailEdit(),
+                    _pwEdit(),
                     _signInButton(),
                   ])
 
@@ -60,18 +57,18 @@ class _SignInScreen extends State<SignInScreen> {
     );
   }
 
-  Widget _emailEdit() {
+  Widget _pwEdit() {
     return Container(
       margin: const EdgeInsets.fromLTRB(0, 80, 0, 60),
       child: TextFormField(
-        controller: _emailController,
+        controller: _pwController,
+        obscureText: true,
         decoration: InputDecoration(
             border: OutlineInputBorder(),
-            labelText: "이메일",
-            hintText: "이메일을 입력해주세요"),
+            labelText: "비밀번호",
+            hintText: "비밀번호를 입력해주세요"),
         validator: (value) {
-          if (!RegExp(Constants.EMAIL_PATTERN).hasMatch(value))
-            return '이메일 형식으로 입력해주세요.';
+          if (value.length < 8) return '8자 이상 입력해주세요.';
           return null;
         },
         onChanged: (value) {
@@ -90,24 +87,15 @@ class _SignInScreen extends State<SignInScreen> {
         child: RaisedButton(
           onPressed: isBtnValid()
               ? () async {
-                  Map dataMap = {
-                    "methodid": "JW1001",
-                    "email": "${_emailController.text}"
-                  };
-                  final reqData = await signInProvider.jw1001(dataMap);
-
-                  if (reqData == null) {
-                    return;
-                  }
-
-                  String emailValid = reqData.emailValid.toString();
-                  if ("Y" == emailValid) {
-                    nextPwInput();
-                  } else if ("N" == emailValid) {
-                    nextSignUpInput();
-                  }
-
-                  LogUtils(StackTrace.current).d(reqData);
+//                  final reqData = await signInProvider.jw1001(_emailController.text);
+//
+//                  if(reqData == null){
+//
+//                    return;
+//                  }
+//
+//
+//                  LogUtils(StackTrace.current).d(reqData);
 //                  var email = reqData.email;
 //                  LogUtils(StackTrace.current).d(email);
                 }
@@ -116,34 +104,16 @@ class _SignInScreen extends State<SignInScreen> {
           color: ColorUtils.c_004680,
           textColor: ColorUtils.c_ffffff,
           disabledColor: ColorUtils.c_e6e6e6,
-          child: Text("계속하기"),
+          child: Text("로그인"),
         ));
   }
 
   bool isBtnValid() {
-    if (_emailController.text.isEmpty) {
-      return false;
-    }
-    return _formEmail.currentState.validate();
+    return _pwController.text.length >= 8;
   }
 
-  Future nextPwInput() async {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => SignInPwScreen()));
+  Future nextSignIn() async {
+//    Navigator.of(context).push(
+//        MaterialPageRoute(builder: (context) => SignInScreen()));
   }
-
-  Future nextSignUpInput() async {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => SignUpScreen()));
-  }
-
-//  Widget _pwEdit() {
-//    return TextField(
-//      obscureText: true,
-//      decoration: InputDecoration(
-//          border: OutlineInputBorder(),
-//          labelText: "비밀번호",
-//          hintText: "비밀번호를 입력해주세요"),
-//    );
-//  }
 }

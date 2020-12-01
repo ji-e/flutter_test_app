@@ -6,15 +6,12 @@ import 'package:fluttertestapp/utils/Constants.dart';
 import 'package:fluttertestapp/utils/LogUtils.dart';
 import 'package:provider/provider.dart';
 
-import 'SignInPwScreen.dart';
-import 'SignUpScreen.dart';
-
-class SignInScreen extends StatefulWidget {
+class SignUpScreen extends StatefulWidget {
   @override
-  _SignInScreen createState() => _SignInScreen();
+  _SignUpScreen createState() => _SignUpScreen();
 }
 
-class _SignInScreen extends State<SignInScreen> {
+class _SignUpScreen extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _formEmail = GlobalKey<FormState>();
 
@@ -67,7 +64,7 @@ class _SignInScreen extends State<SignInScreen> {
         controller: _emailController,
         decoration: InputDecoration(
             border: OutlineInputBorder(),
-            labelText: "이메일",
+            labelText: "이메일입력",
             hintText: "이메일을 입력해주세요"),
         validator: (value) {
           if (!RegExp(Constants.EMAIL_PATTERN).hasMatch(value))
@@ -90,26 +87,7 @@ class _SignInScreen extends State<SignInScreen> {
         child: RaisedButton(
           onPressed: isBtnValid()
               ? () async {
-                  Map dataMap = {
-                    "methodid": "JW1001",
-                    "email": "${_emailController.text}"
-                  };
-                  final reqData = await signInProvider.jw1001(dataMap);
 
-                  if (reqData == null) {
-                    return;
-                  }
-
-                  String emailValid = reqData.emailValid.toString();
-                  if ("Y" == emailValid) {
-                    nextPwInput();
-                  } else if ("N" == emailValid) {
-                    nextSignUpInput();
-                  }
-
-                  LogUtils(StackTrace.current).d(reqData);
-//                  var email = reqData.email;
-//                  LogUtils(StackTrace.current).d(email);
                 }
               : null,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
@@ -121,20 +99,17 @@ class _SignInScreen extends State<SignInScreen> {
   }
 
   bool isBtnValid() {
+
     if (_emailController.text.isEmpty) {
       return false;
     }
     return _formEmail.currentState.validate();
   }
 
-  Future nextPwInput() async {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => SignInPwScreen()));
-  }
 
-  Future nextSignUpInput() async {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => SignUpScreen()));
+  Future nextSignUp() async{
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => SignUpScreen()));
   }
 
 //  Widget _pwEdit() {
