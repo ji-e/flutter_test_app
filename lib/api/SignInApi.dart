@@ -12,7 +12,7 @@ class SignInApi extends ApiRequestBody{
   Future<Either<Exception, String>> jw1001(Map dataMap) async {
     try {
 
-      dataMap.addAll(reqBody);
+      dataMap.addAll(getReqBody());
       final reqbody = json.encode(dataMap);
 
       LogUtils(StackTrace.current).d("$reqbody");
@@ -34,7 +34,7 @@ class SignInApi extends ApiRequestBody{
   Future<Either<Exception, String>> jw2001(Map dataMap) async {
     try {
 
-      dataMap.addAll(reqBody);
+      dataMap.addAll(getReqBody());
       final reqbody = json.encode(dataMap);
 
       LogUtils(StackTrace.current).d("$reqbody");

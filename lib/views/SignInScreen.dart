@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertestapp/Utils/ColorUtils.dart';
+import 'package:fluttertestapp/customviews/CustomBottomDialog.dart';
 import 'package:fluttertestapp/provider/SignInProvider.dart';
+import 'package:fluttertestapp/utils/ColorUtils.dart';
 import 'package:fluttertestapp/utils/Constants.dart';
 import 'package:fluttertestapp/utils/LogUtils.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,8 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreen extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _formEmail = GlobalKey<FormState>();
+
+  BuildContext _bottomSheetBuildContext;
 
   SignInProvider signInProvider;
 
@@ -83,8 +86,9 @@ class _SignInScreen extends State<SignInScreen> {
   }
 
   Widget _signInButton() {
+    var bottom = MediaQuery.of(context).viewInsets.bottom;
     return Container(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+        margin: EdgeInsets.fromLTRB(0, 0, 0, bottom),
         height: 60,
         width: MediaQuery.of(context).size.width,
         child: RaisedButton(
@@ -104,7 +108,27 @@ class _SignInScreen extends State<SignInScreen> {
                   if ("Y" == emailValid) {
                     nextPwInput();
                   } else if ("N" == emailValid) {
-                    nextSignUpInput();
+                    showModalBottomSheet(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(15.0),
+                              topRight: Radius.circular(15.0)),
+                        ),
+                        context: context,
+                        builder: (context) {
+                          _bottomSheetBuildContext = context;
+                          return CustomBottomDialog().buildTwoButtonBottomSheet(
+                              context,
+                              "알림",
+                              '등록된 이메일이 없습니다.\n회원가입 하시겠습니까?',
+                              '취소',
+                              bottomSheetCancel,
+                              '확인',
+                              bottomSheetConfirm);
+                        },
+                        isDismissible: false,
+                        enableDrag: false);
+//
                   }
 
                   LogUtils(StackTrace.current).d(reqData);
@@ -118,6 +142,15 @@ class _SignInScreen extends State<SignInScreen> {
           disabledColor: ColorUtils.c_e6e6e6,
           child: Text("계속하기"),
         ));
+  }
+
+  bottomSheetCancel() {
+    Navigator.pop(_bottomSheetBuildContext);
+  }
+
+  bottomSheetConfirm() {
+    Navigator.pop(_bottomSheetBuildContext);
+    nextSignUpInput();
   }
 
   bool isBtnValid() {

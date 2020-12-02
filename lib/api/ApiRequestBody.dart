@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
-
 class ApiRequestBody {
-
-  Map reqBody = {
-   "timestamp":DateFormat('yyyyMMddhhmmss').format(DateTime.now().toLocal()),
-    "txid":(Uuid().v1().toString()).replaceAll("-", "")
-  };
+  Map getReqBody() {
+    var dateT = DateTime.now().toLocal();
+    var uuid = Uuid().v1().toString();
+    return {
+      "timestamp": DateFormat('yyyyMMddhhmmss').format(dateT),
+      "txid": (uuid).replaceAll("-", "")
+    };
+  }
 }
