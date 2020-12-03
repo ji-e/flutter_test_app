@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertestapp/Utils/ColorUtils.dart';
 import 'package:fluttertestapp/provider/SignInProvider.dart';
 import 'package:fluttertestapp/provider/SignUpProvider.dart';

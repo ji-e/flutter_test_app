@@ -4,7 +4,6 @@ import 'package:fluttertestapp/customviews/CustomBottomDialog.dart';
 import 'package:fluttertestapp/provider/SignInProvider.dart';
 import 'package:fluttertestapp/utils/ColorUtils.dart';
 import 'package:fluttertestapp/utils/Constants.dart';
-import 'package:fluttertestapp/utils/LogUtils.dart';
 import 'package:provider/provider.dart';
 
 import 'SignInPwScreen.dart';
@@ -47,25 +46,21 @@ class _SignInScreen extends State<SignInScreen> {
       ),
       body: Form(
           key: _formEmail,
-          child: SingleChildScrollView(
+//          child: SingleChildScrollView(
               child: Container(
                   padding: const EdgeInsets.all(20),
-                  child: Column(children: <Widget>[
-                    _emailEdit(),
+                  child: ListView(children: <Widget>[
+                _emailEdit(),
                     _signInButton(),
                   ])
-
-//        floatingActionButton: FloatingActionButton(
-//        onPressed:()=>signInProvider.jw1001("jieun1@naver.com"),
-//        tooltip: 'Increment',
-//        child: Icon(Icons.add),
-                  ))),
+//              )
+          )),
     );
   }
 
   Widget _emailEdit() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(0, 80, 0, 60),
+      margin: const EdgeInsets.fromLTRB(0, 80, 0, 0),
       child: TextFormField(
         controller: _emailController,
         decoration: InputDecoration(
@@ -87,8 +82,10 @@ class _SignInScreen extends State<SignInScreen> {
 
   Widget _signInButton() {
     var bottom = MediaQuery.of(context).viewInsets.bottom;
+    var top = MediaQuery.of(context).viewInsets.bottom;
+
     return Container(
-        margin: EdgeInsets.fromLTRB(0, 0, 0, bottom),
+        margin: EdgeInsets.fromLTRB(0, 80, 0, 0),
         height: 60,
         width: MediaQuery.of(context).size.width,
         child: RaisedButton(
@@ -128,12 +125,7 @@ class _SignInScreen extends State<SignInScreen> {
                         },
                         isDismissible: false,
                         enableDrag: false);
-//
                   }
-
-                  LogUtils(StackTrace.current).d(reqData);
-//                  var email = reqData.email;
-//                  LogUtils(StackTrace.current).d(email);
                 }
               : null,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
@@ -169,14 +161,4 @@ class _SignInScreen extends State<SignInScreen> {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => SignUpScreen()));
   }
-
-//  Widget _pwEdit() {
-//    return TextField(
-//      obscureText: true,
-//      decoration: InputDecoration(
-//          border: OutlineInputBorder(),
-//          labelText: "비밀번호",
-//          hintText: "비밀번호를 입력해주세요"),
-//    );
-//  }
 }

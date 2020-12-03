@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertestapp/utils/ColorUtils.dart';
 import 'package:fluttertestapp/utils/LogUtils.dart';
+import 'package:fluttertestapp/utils/TextStyleUtils.dart';
 
 class CustomBottomDialog {
 
@@ -12,12 +13,10 @@ class CustomBottomDialog {
         child: Column(children: <Widget>[
           SizedBox(height: 15),
           Text(title,
-              style: TextStyle(fontSize: 20, color: ColorUtils.c_000000)),
+              style: TextStyleUtils().f_20_000000()),
           Expanded(
               child: Center(
-                  child: Text(msg,
-                      style: TextStyle(
-                          fontSize: 16, color: ColorUtils.c_000000)))),
+                  child: Text(msg, style: TextStyleUtils().f_16_000000()))),
 
           Row(children: <Widget>[
             Container(

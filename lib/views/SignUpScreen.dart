@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertestapp/Utils/ColorUtils.dart';
 import 'package:fluttertestapp/provider/SignInProvider.dart';
 import 'package:fluttertestapp/utils/Constants.dart';
-import 'package:fluttertestapp/utils/LogUtils.dart';
 import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
