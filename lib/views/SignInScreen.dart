@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertestapp/customviews/CustomBottomDialog.dart';
+import 'package:fluttertestapp/views/customviews/CustomBottomDialog.dart';
 import 'package:fluttertestapp/provider/SignInProvider.dart';
 import 'package:fluttertestapp/utils/ColorUtils.dart';
 import 'package:fluttertestapp/utils/Constants.dart';
+import 'package:fluttertestapp/utils/StringUtils.dart';
+import 'package:fluttertestapp/views/customviews/CustomLoading.dart';
 import 'package:provider/provider.dart';
 
 import 'SignInPwScreen.dart';
@@ -21,6 +23,8 @@ class _SignInScreen extends State<SignInScreen> {
   BuildContext _bottomSheetBuildContext;
 
   SignInProvider signInProvider;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -42,19 +46,20 @@ class _SignInScreen extends State<SignInScreen> {
         backgroundColor: ColorUtils.c_ffffff,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text('로그인', style: TextStyle(color: ColorUtils.c_000000)),
+        title: Text(StringUtils.signin_title,
+            style: TextStyle(color: ColorUtils.c_000000)),
       ),
       body: Form(
           key: _formEmail,
-//          child: SingleChildScrollView(
-              child: Container(
-                  padding: const EdgeInsets.all(20),
-                  child: ListView(children: <Widget>[
-                _emailEdit(),
-                    _signInButton(),
-                  ])
-//              )
-          )),
+          child: Stack(children: <Widget>[
+            Container(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: ListView(children: <Widget>[
+                  _emailEdit(),
+                  _signInButton(),
+                ])),
+            isLoading ? CustomLoading() : Container(),
+          ])),
     );
   }
 
@@ -65,11 +70,11 @@ class _SignInScreen extends State<SignInScreen> {
         controller: _emailController,
         decoration: InputDecoration(
             border: OutlineInputBorder(),
-            labelText: "이메일",
-            hintText: "이메일을 입력해주세요"),
+            labelText: StringUtils.signin_email,
+            hintText: StringUtils.signin_email_hint),
         validator: (value) {
           if (!RegExp(Constants.EMAIL_PATTERN).hasMatch(value))
-            return '이메일 형식으로 입력해주세요.';
+            return StringUtils.signin_email_err;
           return null;
         },
         onChanged: (value) {
@@ -91,48 +96,14 @@ class _SignInScreen extends State<SignInScreen> {
         child: RaisedButton(
           onPressed: isBtnValid()
               ? () async {
-                  Map dataMap = {
-                    "methodid": "JW1001",
-                    "email": "${_emailController.text}"
-                  };
-                  final reqData = await signInProvider.jw1001(dataMap);
-
-                  if (reqData == null) {
-                    return;
-                  }
-
-                  String emailValid = reqData.emailValid.toString();
-                  if ("Y" == emailValid) {
-                    nextPwInput();
-                  } else if ("N" == emailValid) {
-                    showModalBottomSheet(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(15.0),
-                              topRight: Radius.circular(15.0)),
-                        ),
-                        context: context,
-                        builder: (context) {
-                          _bottomSheetBuildContext = context;
-                          return CustomBottomDialog().buildTwoButtonBottomSheet(
-                              context,
-                              "알림",
-                              '등록된 이메일이 없습니다.\n회원가입 하시겠습니까?',
-                              '취소',
-                              bottomSheetCancel,
-                              '확인',
-                              bottomSheetConfirm);
-                        },
-                        isDismissible: false,
-                        enableDrag: false);
-                  }
+                  onContinue();
                 }
               : null,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
           color: ColorUtils.c_004680,
           textColor: ColorUtils.c_ffffff,
           disabledColor: ColorUtils.c_e6e6e6,
-          child: Text("계속하기"),
+          child: Text(StringUtils.signin_btn_continue),
         ));
   }
 
@@ -150,6 +121,71 @@ class _SignInScreen extends State<SignInScreen> {
       return false;
     }
     return _formEmail.currentState.validate();
+  }
+
+  void onContinue() async {
+    FocusManager.instance.primaryFocus.unfocus();
+    setState(() => isLoading = true);
+
+    Map dataMap = {
+      "methodid": Constants.JW1001,
+      "email": "${_emailController.text}"
+    };
+
+    final reqData = await signInProvider.jw1001(dataMap);
+
+    setState(() => isLoading = false);
+
+    if (reqData == null) {
+      showModalBottomSheet(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0)),
+          ),
+          context: context,
+          builder: (context) {
+            _bottomSheetBuildContext = context;
+            return CustomBottomDialog().buildTwoButtonBottomSheet(
+              context,
+              StringUtils.notice,
+              StringUtils.signin_network_msg,
+              null,
+              null,
+              StringUtils.btn_confrim,
+              bottomSheetCancel,
+            );
+          },
+          isDismissible: false,
+          enableDrag: false);
+      return;
+    }
+
+    String emailValid = reqData.emailValid.toString();
+    if ("Y" == emailValid) {
+      nextPwInput();
+    } else if ("N" == emailValid) {
+      showModalBottomSheet(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0)),
+          ),
+          context: context,
+          builder: (context) {
+            _bottomSheetBuildContext = context;
+            return CustomBottomDialog().buildTwoButtonBottomSheet(
+                context,
+                StringUtils.notice,
+                StringUtils.signin_dialog_msg,
+                StringUtils.btn_cancel,
+                bottomSheetCancel,
+                StringUtils.btn_confrim,
+                bottomSheetConfirm);
+          },
+          isDismissible: false,
+          enableDrag: false);
+    }
   }
 
   Future nextPwInput() async {
