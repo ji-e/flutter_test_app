@@ -1,4 +1,5 @@
 class StringUtils {
+  static String app_name = '주원산업';
   static String notice = '알림';
   static String btn_confrim = '확인';
   static String btn_cancel = '취소';
@@ -11,4 +12,10 @@ class StringUtils {
   static String signin_email_err = '이메일 형식으로 입력해주세요.';
   static String signin_dialog_msg = '등록된 이메일이 없습니다.\n회원가입 하시겠습니까?';
   static String signin_btn_continue = '계속하기';
+
+  static String signin_pw = '비밀번호';
+  static String signin_pw_hint = '비밀번호를 입력해주세요.';
+  static String signin_pw_err = '8자 이상 입력해주세요.';
+
+
 }

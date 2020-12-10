@@ -4,6 +4,8 @@ class Constants {
   static var JW2001 = 'JW2001';
 
 
+  static var INSTANCE_ID = 'INSTANCE_ID';
+
 
 
 

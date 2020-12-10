@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertestapp/utils/LogUtils.dart';
 import 'package:fluttertestapp/views/customviews/CustomBottomDialog.dart';
 import 'package:fluttertestapp/provider/SignInProvider.dart';
 import 'package:fluttertestapp/utils/ColorUtils.dart';
@@ -107,15 +108,19 @@ class _SignInScreen extends State<SignInScreen> {
         ));
   }
 
+  /// 다이얼로그 취소
   bottomSheetCancel() {
+    LogUtils(StackTrace.current).d("erererererer");
     Navigator.pop(_bottomSheetBuildContext);
   }
 
+  /// 다이얼로그 확인
   bottomSheetConfirm() {
     Navigator.pop(_bottomSheetBuildContext);
     nextSignUpInput();
   }
 
+  /// 계속하기 버튼 활성화 여부
   bool isBtnValid() {
     if (_emailController.text.isEmpty) {
       return false;
@@ -123,13 +128,14 @@ class _SignInScreen extends State<SignInScreen> {
     return _formEmail.currentState.validate();
   }
 
+  /// 계속하기 버튼 클릭
   void onContinue() async {
     FocusManager.instance.primaryFocus.unfocus();
     setState(() => isLoading = true);
 
     Map dataMap = {
-      "methodid": Constants.JW1001,
-      "email": "${_emailController.text}"
+      'methodid': Constants.JW1001,
+      'email': '${_emailController.text}'
     };
 
     final reqData = await signInProvider.jw1001(dataMap);
@@ -158,6 +164,8 @@ class _SignInScreen extends State<SignInScreen> {
           },
           isDismissible: false,
           enableDrag: false);
+
+//    UICommonUtils().showNetworkDialog(context, bottomSheetCancel());
       return;
     }
 
@@ -188,12 +196,20 @@ class _SignInScreen extends State<SignInScreen> {
     }
   }
 
+  /// 비밀번호 입력 화면으로 이동
   Future nextPwInput() async {
+    Map args = {
+      'email': '${_emailController.text}'
+    };
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => SignInPwScreen()));
+       .push(MaterialPageRoute(builder: (context) => SignInPwScreen(args:args)));
   }
 
+  /// 회원가입 화면으로 이동
   Future nextSignUpInput() async {
+    Map args = {
+      'email': '${_emailController.text}'
+    };
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => SignUpScreen()));
   }

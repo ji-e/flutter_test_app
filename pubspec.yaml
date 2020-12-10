@@ -30,6 +30,8 @@ dependencies:
   stack_trace: any
   uuid: any
   intl: any
+  firebase_messaging: any
+  shared_preferences: any
 
 
   # The following adds the Cupertino Icons font to your application.

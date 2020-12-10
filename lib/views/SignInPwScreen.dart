@@ -2,18 +2,34 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertestapp/Utils/ColorUtils.dart';
 import 'package:fluttertestapp/provider/SignInProvider.dart';
+import 'package:fluttertestapp/utils/Constants.dart';
+import 'package:fluttertestapp/utils/LogUtils.dart';
+import 'package:fluttertestapp/utils/StringUtils.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'customviews/CustomBottomDialog.dart';
+import 'customviews/CustomLoading.dart';
 
 class SignInPwScreen extends StatefulWidget {
+  Map args;
+  SignInPwScreen({@required this.args}) ;
+
   @override
   _SignInPwScreen createState() => _SignInPwScreen();
 }
 
 class _SignInPwScreen extends State<SignInPwScreen> {
+
   final _pwController = TextEditingController();
-  final _formEmail = GlobalKey<FormState>();
+  final _formPw = GlobalKey<FormState>();
+
+  BuildContext _bottomSheetBuildContext;
 
   SignInProvider signInProvider;
+
+  bool isLoading = false;
+  
 
   @override
   void initState() {
@@ -35,23 +51,20 @@ class _SignInPwScreen extends State<SignInPwScreen> {
         backgroundColor: ColorUtils.c_ffffff,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text('로그인', style: TextStyle(color: ColorUtils.c_000000)),
+        title: Text(StringUtils.signin_title, style: TextStyle(color: ColorUtils.c_000000)),
       ),
-      body: Form(
-          key: _formEmail,
-          child: SingleChildScrollView(
-              child: Container(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(children: <Widget>[
-                    _pwEdit(),
-                    _signInButton(),
-                  ])
 
-//        floatingActionButton: FloatingActionButton(
-//        onPressed:()=>signInProvider.jw1001("jieun1@naver.com"),
-//        tooltip: 'Increment',
-//        child: Icon(Icons.add),
-                  ))),
+      body: Form(
+          key: _formPw,
+          child: Stack(children: <Widget>[
+            Container(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: ListView(children: <Widget>[
+                  _pwEdit(),
+                  _signInButton(),
+                ])),
+            isLoading ? CustomLoading() : Container(),
+          ])),
     );
   }
 
@@ -63,15 +76,15 @@ class _SignInPwScreen extends State<SignInPwScreen> {
         obscureText: true,
         decoration: InputDecoration(
             border: OutlineInputBorder(),
-            labelText: "비밀번호",
-            hintText: "비밀번호를 입력해주세요"),
+            labelText: StringUtils.signin_pw,
+            hintText: StringUtils.signin_pw_hint),
         validator: (value) {
-          if (value.length < 8) return '8자 이상 입력해주세요.';
+          if (value.length < 8) return StringUtils.signin_pw_err;
           return null;
         },
         onChanged: (value) {
           setState(() {});
-          _formEmail.currentState.validate();
+          _formPw.currentState.validate();
         },
       ),
     );
@@ -79,38 +92,111 @@ class _SignInPwScreen extends State<SignInPwScreen> {
 
   Widget _signInButton() {
     return Container(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+        margin: EdgeInsets.fromLTRB(0, 80, 0, 0),
         height: 60,
         width: MediaQuery.of(context).size.width,
         child: RaisedButton(
           onPressed: isBtnValid()
               ? () async {
-//                  final reqData = await signInProvider.jw1001(_emailController.text);
-//
-//                  if(reqData == null){
-//
-//                    return;
-//                  }
-//
-//
-//                  LogUtils(StackTrace.current).d(reqData);
-//                  var email = reqData.email;
-//                  LogUtils(StackTrace.current).d(email);
-                }
+            onSignIn();
+          }
               : null,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
           color: ColorUtils.c_004680,
           textColor: ColorUtils.c_ffffff,
           disabledColor: ColorUtils.c_e6e6e6,
-          child: Text("로그인"),
+          child: Text(StringUtils.signin_title),
         ));
   }
 
+  /// 다이얼로그 취소
+  bottomSheetCancel() {
+    Navigator.pop(_bottomSheetBuildContext);
+  }
+
+  /// 다이얼로그 확인
+  bottomSheetConfirm() {
+    Navigator.pop(_bottomSheetBuildContext);
+    nextMain();
+  }
+
+  /// 로그인 버튼 활성화 여부
   bool isBtnValid() {
     return _pwController.text.length >= 8;
   }
 
-  Future nextSignIn() async {
+  /// 로그인 버튼 클릭
+  void onSignIn() async {
+    FocusManager.instance.primaryFocus.unfocus();
+    setState(() => isLoading = true);
+
+    var prefs = await SharedPreferences.getInstance();
+    var instanceId = prefs.getString(Constants.INSTANCE_ID) ?? '';
+
+    Map dataMap = {
+      'methodid': Constants.JW2001,
+      'email': '${widget.args['email']}',
+      'password': '${_pwController.text}',
+      'provider': instanceId
+    };
+
+    final reqData = await signInProvider.jw2001(dataMap);
+
+    setState(() => isLoading = false);
+
+    if (reqData == null) {
+      showModalBottomSheet(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0)),
+          ),
+          context: context,
+          builder: (context) {
+            _bottomSheetBuildContext = context;
+            return CustomBottomDialog().buildTwoButtonBottomSheet(
+              context,
+              StringUtils.notice,
+              StringUtils.signin_network_msg,
+              null,
+              null,
+              StringUtils.btn_confrim,
+              bottomSheetCancel,
+            );
+          },
+          isDismissible: false,
+          enableDrag: false);
+      return;
+    }
+
+//    String emailValid = reqData.emailValid.toString();
+//    if ("Y" == emailValid) {
+//      nextPwInput();
+//    } else if ("N" == emailValid) {
+//      showModalBottomSheet(
+//          shape: RoundedRectangleBorder(
+//            borderRadius: BorderRadius.only(
+//                topLeft: Radius.circular(15.0),
+//                topRight: Radius.circular(15.0)),
+//          ),
+//          context: context,
+//          builder: (context) {
+//            _bottomSheetBuildContext = context;
+//            return CustomBottomDialog().buildTwoButtonBottomSheet(
+//                context,
+//                StringUtils.notice,
+//                StringUtils.signin_dialog_msg,
+//                StringUtils.btn_cancel,
+//                bottomSheetCancel,
+//                StringUtils.btn_confrim,
+//                bottomSheetConfirm);
+//          },
+//          isDismissible: false,
+//          enableDrag: false);
+//    }
+  }
+
+  Future nextMain() async {
 //    Navigator.of(context).push(
 //        MaterialPageRoute(builder: (context) => SignInScreen()));
   }
