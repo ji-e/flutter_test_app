@@ -9,7 +9,7 @@ class SignInProvider with ChangeNotifier {
   final api = SignInApi();
 
   Future<JW1001> jw1001(Map dataMap) async {
-    final apiResult = await api.jw1001(dataMap);
+    final apiResult = await api.signInRequestService(dataMap);
     return apiResult.fold((l) {
       return null;
     }, (r) {
@@ -19,7 +19,7 @@ class SignInProvider with ChangeNotifier {
   }
 
   Future<JW2001> jw2001(Map dataMap) async {
-    final apiResult = await api.jw2001(dataMap);
+    final apiResult = await api.signInRequestService(dataMap);
     return apiResult.fold((l) {
       return null;
     }, (r) {

@@ -1,123 +1,160 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:fluttertestapp/Utils/ColorUtils.dart';
-import 'package:fluttertestapp/provider/SignInProvider.dart';
+import 'package:fluttertestapp/provider/SignUpProvider.dart';
+import 'package:fluttertestapp/utils/ColorUtils.dart';
 import 'package:fluttertestapp/utils/Constants.dart';
+import 'package:fluttertestapp/utils/StringUtils.dart';
+import 'package:fluttertestapp/utils/UICommonUtils.dart';
+import 'package:fluttertestapp/views/MainListScreen.dart';
 import 'package:provider/provider.dart';
 
-class SignUpScreen extends StatefulWidget {
+import 'BasePageScreen.dart';
+
+class SignUpScreen extends BasePageScreen {
+  final Map args;
+  SignUpScreen({@required this.args}) ;
+
   @override
   _SignUpScreen createState() => _SignUpScreen();
 }
 
-class _SignUpScreen extends State<SignUpScreen> {
-  final _emailController = TextEditingController();
-  final _formEmail = GlobalKey<FormState>();
+class _SignUpScreen extends BasePageScreenState<SignUpScreen>  with BaseScreen{
+  final _pwController = TextEditingController();
+  final _pw2Controller = TextEditingController();
+  final _formPw = GlobalKey<FormState>();
 
-  SignInProvider signInProvider;
+
+  SignUpProvider signUpProvider;
+
+  @override
+  String appBarTitleText() {
+    return StringUtils.signupTitle;
+  }
+
+  @override
+  dynamic appBarTitleColor() {
+    return ColorUtils.c_ffffff;
+  }
+
+  @override
+  Widget body() {
+    return Scaffold(
+      body: Form(
+        key: _formPw,
+        child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+            child: ListView(children: <Widget>[
+              _pwEdit(),
+              _pw2Edit(),
+              _signUpButton(),
+            ])),
+      ),
+    );
+  }
 
   @override
   void initState() {
-    signInProvider = Provider.of<SignInProvider>(context, listen: false);
+    signUpProvider = Provider.of<SignUpProvider>(context, listen: false);
     super.initState();
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _pwController.dispose();
+    _pw2Controller.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: ColorUtils.c_ffffff,
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: Text('로그인', style: TextStyle(color: ColorUtils.c_000000)),
-      ),
-      body: Form(
-          key: _formEmail,
-          child: SingleChildScrollView(
-              child: Container(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(children: <Widget>[
-                    _emailEdit(),
-                    _signInButton(),
-                  ])
-
-//        floatingActionButton: FloatingActionButton(
-//        onPressed:()=>signInProvider.jw1001("jieun1@naver.com"),
-//        tooltip: 'Increment',
-//        child: Icon(Icons.add),
-                  ))),
-    );
-  }
-
-  Widget _emailEdit() {
+  Widget _pwEdit() {
     return Container(
-      margin: const EdgeInsets.fromLTRB(0, 80, 0, 60),
+      margin: const EdgeInsets.fromLTRB(0, 80, 0, 0),
       child: TextFormField(
-        controller: _emailController,
-        decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: "이메일입력",
-            hintText: "이메일을 입력해주세요"),
+        controller: _pwController,
+        obscureText: true,
+        decoration: UICommonUtils().commonInputDecoration(
+            StringUtils.signupPw, StringUtils.signupPwHint),
         validator: (value) {
-          if (!RegExp(Constants.EMAIL_PATTERN).hasMatch(value))
-            return '이메일 형식으로 입력해주세요.';
+          if (value.length < 8) return StringUtils.signupPwHint;
           return null;
         },
         onChanged: (value) {
+
+          _formPw.currentState.validate();
           setState(() {});
-          _formEmail.currentState.validate();
         },
       ),
     );
   }
 
-  Widget _signInButton() {
+  Widget _pw2Edit() {
     return Container(
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-        height: 60,
-        width: MediaQuery.of(context).size.width,
-        child: RaisedButton(
-          onPressed: isBtnValid()
-              ? () async {
+      margin: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+      child: TextFormField(
+        controller: _pw2Controller,
+        obscureText: true,
+        decoration: UICommonUtils().commonInputDecoration(
+            StringUtils.signupPw2, StringUtils.signupPw2Hint),
+        validator: (value) {
+          if (value !=_pwController.text) {
+            return StringUtils.signupPw2Err;
+          }
+          return null;
+        },
+        onChanged: (value) {
 
-                }
-              : null,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          color: ColorUtils.c_004680,
-          textColor: ColorUtils.c_ffffff,
-          disabledColor: ColorUtils.c_e6e6e6,
-          child: Text("계속하기"),
-        ));
+          _formPw.currentState.validate();
+          setState(() {});
+        },
+      ),
+    );
   }
 
-  bool isBtnValid() {
+  Widget _signUpButton() {
+    return Container(
+        margin: EdgeInsets.fromLTRB(0, 80, 0, 20),
+        height: 60,
+        width: MediaQuery.of(context).size.width,
+        child: UICommonUtils().commonRaisedButton(
+            isBtnValid(), onSignUp, StringUtils.signupTitle)
+    );
+  }
 
-    if (_emailController.text.isEmpty) {
-      return false;
+  void onSignUp() async {
+    FocusManager.instance.primaryFocus.unfocus();
+    setState(() => isLoading = true);
+
+    var instanceId = await getInstanceId();
+
+    Map dataMap = {
+      'methodid': Constants.JW1002,
+      'email': '${widget.args['email']}',
+      'password': '${_pwController.text}',
+      'provider': instanceId
+    };
+
+    final reqData = await signUpProvider.jw1002(dataMap);
+
+    setState(() => isLoading = false);
+
+    if (reqData == null) {
+      showNetworkErrorDialog();
+      return;
     }
-    return _formEmail.currentState.validate();
+
+  }
+
+  /// 회원가입 버튼 활성화 여부
+  bool isBtnValid() {
+    if(_pwController.text.length >= 8) {
+      return _pwController.text == _pw2Controller.text;
+    }
+    return false;
   }
 
 
   Future nextSignUp() async{
-    Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => SignUpScreen()));
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => MainListScreen()));
   }
 
-//  Widget _pwEdit() {
-//    return TextField(
-//      obscureText: true,
-//      decoration: InputDecoration(
-//          border: OutlineInputBorder(),
-//          labelText: "비밀번호",
-//          hintText: "비밀번호를 입력해주세요"),
-//    );
-//  }
 }

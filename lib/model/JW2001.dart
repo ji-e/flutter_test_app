@@ -8,8 +8,10 @@ class JW2001 extends BaseResBody {
 
   static JW2001 fromJson(Map<String, dynamic> json) {
     var resbody = json['resbody'];
-    return JW2001(
-        signInValid: resbody['signInValid'],
-        autoToken: resbody['autoToken']);
+    return resbody != null
+        ? JW2001(
+            signInValid: resbody['signInValid'],
+            autoToken: resbody['autoToken'])
+        : null;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertestapp/Utils/ColorUtils.dart';
+import 'package:fluttertestapp/provider/MainProvider.dart';
 import 'package:fluttertestapp/provider/SignInProvider.dart';
 import 'package:fluttertestapp/provider/SignUpProvider.dart';
 import 'package:fluttertestapp/views/IntroScreen.dart';
@@ -38,23 +39,13 @@ class _MyApp extends State<MyApp> {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => SignInProvider()),
-//          ChangeNotifierProvider(create: (context) => SignInPwProvider()),
           ChangeNotifierProvider(create: (context) => SignUpProvider()),
+          ChangeNotifierProvider(create: (context) => MainProvider()),
         ],
         child: MaterialApp(
             title: 'Api Calls like a Legend with Provider',
-            theme: ThemeData(primaryColor: ColorUtils.c_004680,accentIconTheme: IconThemeData(color: Colors.black)),
+            theme: ThemeData(primaryColor: ColorUtils.c_004680, accentIconTheme: IconThemeData(color: Colors.black)),
             home: IntroScreen()));
-//    return MultiProvider(
-//        providers: [
-//          ChangeNotifierProvider(create: (context) => SignInProvider()),
-//          ChangeNotifierProvider(create: (context) => SignUpProvider())
-//        ],
-//        child: MaterialApp(
-//          title: 'Flutter Demo',
-//          theme: ThemeData(primaryColor: ColorUtils.ffffffColor),
-//          home: IntroScreen(),
-//        ));
   }
   @override
   void dispose() {

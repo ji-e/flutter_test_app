@@ -8,8 +8,8 @@ class JW1001 extends BaseResBody {
 
   static JW1001 fromJson(Map<String, dynamic> json) {
     var resbody = json['resbody'];
-    return JW1001(
-        emailValid: resbody['emailValid'],
-        email: resbody['email']);
+    return resbody != null
+        ? JW1001(emailValid: resbody['emailValid'], email: resbody['email'])
+        : null;
   }
 }

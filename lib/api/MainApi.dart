@@ -4,12 +4,11 @@ import 'package:fluttertestapp/api/ApiService.dart';
 import 'package:fluttertestapp/utils/LogUtils.dart';
 import 'dart:async';
 
-class SignInApi extends ApiService {
-  final url = 'https://joowon12.herokuapp.com/process/sign_p/admin';
+class MainApi extends ApiService{
+  final url = 'https://joowon12.herokuapp.com/process/base/${ApiService.SERVICE_EMPLOYEE}';
 
-  Future<Either<String, String>> signInRequestService(Map dataMap) async {
+  Future<Either<String, String>> mainRequestService(Map dataMap) async {
     try {
-
       dataMap.addAll(getReqBody());
       final reqbody = json.encode(dataMap);
       LogUtils(StackTrace.current).d('$reqbody');
