@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertestapp/provider/MainProvider.dart';
 import 'package:fluttertestapp/utils/ColorUtils.dart';
 import 'package:fluttertestapp/utils/Constants.dart';
+import 'package:fluttertestapp/utils/LogUtils.dart';
 import 'package:fluttertestapp/utils/StringUtils.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +17,7 @@ class _MainListScreen extends BasePageScreenState<MainListScreen>
     with BaseScreen {
   final _searchController = TextEditingController();
   final _formSearch = GlobalKey<FormState>();
+  List _employeeList;
 
   MainProvider mainProvider;
 
@@ -55,6 +57,7 @@ class _MainListScreen extends BasePageScreenState<MainListScreen>
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: ListView(children: <Widget>[
               _searchEdit(),
+              _employeeListView(),
 //              Expanded(child: Container())
             ])),
       ),
@@ -103,6 +106,33 @@ class _MainListScreen extends BasePageScreenState<MainListScreen>
     ]);
   }
 
+  Widget _employeeListView() {
+    LogUtils(StackTrace.current).d('Instance ID:${_employeeList !=null}');
+    return _employeeList !=null
+        ? ListView.builder(
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(8),
+        itemCount: _employeeList.length,
+        itemBuilder: (BuildContext buildContext, int position) {
+          return _employeeItem(position);
+        }):Container();
+  }
+
+  Widget _employeeItem(int position) {
+    return Row(children: <Widget>[
+      Center(
+          child:Container(
+              height: 50,
+              width: 50,
+              child: Image.asset('images/img_people.png')
+          )),
+    Column(children: <Widget>[
+      Text('${position}')
+    ]),
+      ]
+    );
+  }
+
 
   /// 직원리스트가져오기
   getEmployeeList() async{
@@ -110,7 +140,7 @@ class _MainListScreen extends BasePageScreenState<MainListScreen>
 
     Map dataMap = {
       'methodid': Constants.JW3001,
-      'year': '2020'
+      'year': '${DateTime.now().toLocal().year}'
     };
 
     final reqData = await mainProvider.jw3001(dataMap);
@@ -121,5 +151,9 @@ class _MainListScreen extends BasePageScreenState<MainListScreen>
       showNetworkErrorDialog();
       return;
     }
+    LogUtils(StackTrace.current).d('employeeList ID: ${ reqData.employeeList.length}');
+
+    setState(() =>  _employeeList=reqData.employeeList);
+    LogUtils(StackTrace.current).d('Instance ID: ${_employeeList[0]}');
   }
 }
